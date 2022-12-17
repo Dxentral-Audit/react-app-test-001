@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mai - OpenAI Chat GPT3 App</title>
+  <style>
+    body {
+      background: linear-gradient(to right, #4b0082, #9400d3, #0000ff, #00ff00, #ffff00, #ff7f00, #ff0000);
+      background-size: 200% 200%;
+      animation: gradient 15s ease infinite;
+      color: white;
+      font-family: Arial, sans-serif;
+      font-weight: bold;
+      margin: 0;
+      padding: 0;
+    }
+    @keyframes gradient {
+      0% {
+        background-position: 0% 50%;
+      }
+      50% {
+        background-position: 100% 50%;
+      }
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      text-align: center;
+      padding: 2em;
+    }
+    header {
+      background: #4b0082;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1em;
+    }
+    .logo {
+      font-size: 2em;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+    }
+    .logo img {
+      height: 1em;
+      margin-right: 0.5em;
+    }
+    nav {
+      display:
+
+    }
+    nav a {
+      color: white;
+      text-decoration: none;
+      padding: 0.5em;
+    }
+    nav a:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+    .chat-container {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 1em;
+      border-radius: 0.5em;
+      margin-top: 2em;
+    }
+    .chat-container .chat-messages {
+      height: 400px;
+      overflow-y: scroll;
+    }
+    .chat-container .chat-messages .message {
+      display: flex;
+      margin-bottom: 1em;
+    }
+    .chat-container .chat-messages .message.user .message-bubble {
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      align-self: flex-end;
+    }
+    .chat-container .chat-messages .message.bot .message-bubble {
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      align-self: flex-start;
+    }
+    .chat-container .chat-messages .message.user .message-bubble:after {
+      border-left-color: rgba(255, 255, 255, 0.1);
+    }
+    .chat-container .chat-messages .message.bot .message-bubble:after {
+      border-right-color: rgba(255, 255, 255, 0.1);
+    }
+    .chat-container .chat-messages .message .message-bubble {
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      border-radius: 0.5em;
+      padding: 1em;
+      position: relative;
+      max-width: 80%;
+    }
+    .chat-container .chat-messages .message .message-bubble:after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      width: 0;
+      height: 0;
+      border: 20px solid transparent;
+    }
+    .chat-container .chat-messages .message.user .message-bubble:after {
+      right: 100%;
+      border-right-color: rgba(255, 255, 255, 0.1);
+    }
+    .chat-container .chat-messages .message.bot .message-bubble:after {
+      left: 100%;
+      border-left-color: rgba(255, 255, 255, 0.1);
+    }
+    .chat-container .chat-messages .message .message-bubble p {
+      margin: 0;
+      padding: 0;
+    }
+    .chat-container .chat-messages .message .message-bubble p:last-child {
+      margin-bottom: 0;
+    }
+    .chat-container .chat-form {
+      display: flex;
+      align-items: flex-end;
+    }
+    .chat-container .chat-form input {
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      border-radius: 0.5em;
+      color: white;
+      padding: 1em;
+      flex-grow: 1;
+    }
+    .chat-container .chat-form input:focus {
+      outline: none;
+    }
+    .chat-container .chat-form button {
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      border-radius: 0.5em;
+      color: white;
+      padding: 1em;
+      cursor: pointer;
+    }
+    .chat-container .chat-form button:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+    .chat-container .chat-form button:focus {
+      outline: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo">
+        <img src="https://i.imgur.com/Qr71crq.png" alt="Logo">
+        Mai
+      </div>
+      <nav>
+        <a href="https://github.com/openai/gpt-3">GPT-3</a>
+        <a href="https://github.com/openai/gpt-3">OpenAI</a>
+      </nav>
+    </header>
+    <div class="chat-container">
+      <div class="chat-messages">
+        <div class="message bot">
+          <div class="message-bubble">
+            <p>Hello! I'm Mai, a chatbot powered by GPT-3.</p>
+            <p>I can talk about anything you want. Try asking me a question.</p>
+          </div>
+        </div>
+      </div>
+      <form class="chat-form">
+        <input type="text" name="message" placeholder="Type a message...">
+        <button type="submit">Send</button>
+      </form>
+    </div>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.2/axios.min.js"></script>
+  <script>
+    const messages = document.querySelector('.chat-messages');
+    const form = document.querySelector('.chat-form');
+    const input = document.querySelector('input');
+
+    const addMessage = (message, position) => {
+      const div = document.createElement('div');
+      div.classList.add('message', position);
+      div.innerHTML = `
+        <div class="message-bubble">
+          <p>${message}</p>
+        </div>
+      `;
+      messages.appendChild(div);
+      messages.scrollTop = messages.scrollHeight;
+    };
+
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      const message = input.value;
+      addMessage(message, 'user');
+      input.value = '';
+      input.focus();
+
+      axios.post('/chat', {
+        message
+      })
+      .then(function (response) {
+        addMessage(response.data.message, 'bot');
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+    });
+  </script>
+</body>
+</html>
+```
